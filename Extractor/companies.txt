@@ -12,3 +12,9 @@ corporation
 property
 owner
 limit
+corp.
+corporation.
+corporation
+pvt ltd
+pvt
+pvt.

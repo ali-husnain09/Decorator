@@ -1,3 +1,9 @@
+import openpyxl
+import time
+import colorama
+from colorama import Fore, Back
+
+colorama.init(autoreset=True)
 
 
 class NameValidations:
@@ -9,7 +15,9 @@ class NameValidations:
         self.last_row_number = 0
         self.r_num = 0  # Initialize r_num as a class attribute
 
-    def __checkValid__(self, name):
+    # @staticmethod
+    # @njit
+    def check_valid(self, name):
         name = str(name)
         valid_name = False
         valid_chars = []
@@ -74,9 +82,12 @@ class NameValidations:
             )
             if not user_name:
                 print("No More Rows To Process")
+                print(
+                    f"{Fore.BLACK + Back.LIGHTGREEN_EX}Total Rows are: {self.last_row_number}"
+                )
                 break
 
-            if self.__checkValid__(user_name):
+            if self.check_valid(user_name):
                 print(f"Company Found: {user_name} is valid.")
                 self.save_value(sheet, "It's a Company")
                 self.appending_sheet(
@@ -88,6 +99,19 @@ class NameValidations:
         wb.save(self.details_path1)
 
 
+details_path1 = "Extractor/details.xlsx"
+companies_path1 = "Extractor/companies.xlsx"
+companies_list = "Extractor/companies.txt"
+
 if __name__ == "__main__":
-    validation_obj = NameValidations()
+    # Start the timer
+    start_time = time.time()
+    validation_obj = NameValidations(details_path1, companies_path1, companies_list)
     validation_obj.company_checker()
+    # End the timer
+    end_time = time.time()
+
+    # Calculate the execution time
+    execution_time = end_time - start_time
+
+    print(f"\nExecution time:{Fore.LIGHTYELLOW_EX} {execution_time} seconds")
