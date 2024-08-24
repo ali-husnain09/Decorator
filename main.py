@@ -1,6 +1,7 @@
 from pyfiglet import Figlet, figlet_format
 from colorama import Fore, Back, Style, init
 import openpyxl
+import time
 
 # Initialize colorama
 init()
@@ -14,17 +15,19 @@ print(Fore.LIGHTRED_EX + decorator_text + Style.RESET_ALL, end="")
 print(Fore.LIGHTGREEN_EX + "by " + Style.RESET_ALL)
 print(Fore.LIGHTGREEN_EX + str1 + Style.RESET_ALL)
 print(
-    Fore.LIGHTWHITE_EX
-    + "------------------------------------------COPYRIGHT® ALI HUSNAIN"
+    Back.LIGHTWHITE_EX
+    + Fore.BLACK
+    + "------------------------------------------COPYRIGHT® ALI HUSNAIN "
     + Style.RESET_ALL
 )
 print(
     Fore.LIGHTWHITE_EX
-    + "----------------------------------------------------------------"
+    + "================================================================="
     + Style.RESET_ALL
 )
 
 
+# //here is to extract companies from sheet
 class NameValidations:
 
     def __init__(self, details_path1, companies_path1, companies_list):
@@ -98,11 +101,18 @@ class NameValidations:
                 self.get_next_row_data()
             )
             if not user_name:
-                print("No More Rows To Process")
+                print(
+                    Fore.BLACK
+                    + Back.GREEN
+                    + "\nNO MORE ROWS TO PROCESS "
+                    + Style.RESET_ALL
+                )
                 break
 
             if self.__checkValid__(user_name):
-                print(f"Company Found: {user_name} is valid.")
+                print(
+                    f"{Fore.LIGHTBLUE_EX}COMPANY FOUND:{Style.RESET_ALL} {user_name}{Style.RESET_ALL}"
+                )
                 self.save_value(sheet, "It's a Company")
                 self.appending_sheet(
                     user_name, formal_address, city, state, p_a, p_c, p_s
@@ -113,6 +123,7 @@ class NameValidations:
         wb.save(self.details_path1)
 
 
+# //here is the details merger
 class Details_Merger:
 
     def __init__(self, details_path2, companies_path2):
@@ -142,7 +153,7 @@ class Details_Merger:
         sheet.cell(row=self.row_number, column=10).value = ag_N
         sheet.cell(row=self.row_number, column=11).value = ag_A
         sheet.cell(row=self.row_number, column=12).value = self.row_number
-        print(f"The provided value is save in {self.row_number}")
+        print(f"THE PROVIDED VALUE SAVED IN: {self.row_number}")
         wb.save(self.details_path2)
 
     def merger(self):
@@ -152,9 +163,59 @@ class Details_Merger:
                 self.companies_sheet()
             )
             if not user:
-                print("No More Rows To Process")
+                print(
+                    Fore.BLACK
+                    + Back.GREEN
+                    + "\nNO MORE ROWS TO PROCESS "
+                    + Style.RESET_ALL
+                )
                 break
             self.details_sheet(phone_numbers, emails, agent_name, agent_address, to_row)
+
+            self.last_row_number += 1
+
+
+# //here is the eligibles merger
+class Eligibles_Merger:
+
+    def __init__(self, companies_path, eligible_path):
+        self.companies_path = companies_path
+        self.eligible_path = eligible_path
+        self.last_row_number = 0
+
+    def eligible_sheet(self):
+        wb = openpyxl.load_workbook(self.eligible_path)
+        sheet = wb.active
+        user_name = sheet.cell(row=self.last_row_number + 2, column=1).value
+        phone_numbers = sheet.cell(row=self.last_row_number + 2, column=8).value
+        emails = sheet.cell(row=self.last_row_number + 2, column=9).value
+        to_row = sheet.cell(row=self.last_row_number + 2, column=12).value
+
+        return user_name, phone_numbers, emails, to_row
+
+    def companies_sheet(self, ph, emails, to_row):
+        wb = openpyxl.load_workbook(self.companies_path)
+        sheet = wb.active
+        self.row_number = int(to_row)
+        sheet.cell(row=self.row_number, column=8).value = ph
+        sheet.cell(row=self.row_number, column=9).value = emails
+        sheet.cell(row=self.row_number, column=12).value = self.row_number
+        print(f"THE PROVIDED VALUE SAVED IN: {self.row_number}")
+        wb.save(self.companies_path)
+
+    def merger(self):
+        self.enteringDetails = True
+        while self.enteringDetails:
+            user, phone_numbers, emails, to_row = self.eligible_sheet()
+            if not user:
+                print(
+                    Fore.BLACK
+                    + Back.GREEN
+                    + "\nNO MORE ROWS TO PROCESS "
+                    + Style.RESET_ALL
+                )
+                break
+            self.companies_sheet(phone_numbers, emails, to_row)
 
             self.last_row_number += 1
 
@@ -168,42 +229,100 @@ class Dectorator:
         details_path2,
         companies_path2,
         companies_list,
+        companies_path3,
+        eligibles_path,
     ):
         self.details_sheet1 = details_path1
         self.details_sheet2 = details_path2
         self.companies_sheet1 = companies_path1
         self.companies_sheet2 = companies_path2
         self.companies_list = companies_list
+        self.companies_path3 = companies_path3
+        self.eligibles_path = eligibles_path
 
     def decorating(self):
         self.enteringDetails = True
         while self.enteringDetails:
             print(
-                f"\n{Fore.LIGHTYELLOW_EX}Press 1: To Extract Companies........{Style.RESET_ALL}"
+                f"\n{Fore.LIGHTYELLOW_EX}PRESS{Fore.LIGHTGREEN_EX} [1]: {Fore.LIGHTYELLOW_EX}TO EXTRACT THE COMPANIES{Style.RESET_ALL}"
             )
             print(
-                f"{Fore.LIGHTYELLOW_EX}Press 2: To Merge The Details........{Style.RESET_ALL}"
+                f"{Fore.LIGHTYELLOW_EX}PRESS {Fore.LIGHTGREEN_EX}[2]: {Fore.LIGHTYELLOW_EX}TO MERGE THE DETAILS{Style.RESET_ALL}"
             )
             print(
-                f"{Fore.LIGHTYELLOW_EX}Press 0: To Exit The Program........{Style.RESET_ALL}\n"
+                f"{Fore.LIGHTYELLOW_EX}PRESS {Fore.LIGHTGREEN_EX}[3]: {Fore.LIGHTYELLOW_EX}TO MERGE THE ELIGIBLE DETAILS{Style.RESET_ALL}"
             )
-            choice = input(f"{Fore.LIGHTGREEN_EX}Enter Your Choice: {Style.RESET_ALL}")
+            print(
+                f"{Fore.LIGHTYELLOW_EX}PRESS {Fore.LIGHTGREEN_EX}[0]: {Fore.LIGHTYELLOW_EX}TO EXIT THE PROGRAM{Style.RESET_ALL}\n"
+            )
+            choice = input(f"{Fore.LIGHTGREEN_EX}ENTER YOUR CHOICE: {Style.RESET_ALL}")
             match choice:
                 case "1":
+                    start_time = time.time()
                     extractor_obj = NameValidations(
                         self.details_sheet1, self.companies_sheet1, self.companies_list
                     )
+                    print(
+                        f"\n==============================={Fore.LIGHTYELLOW_EX} [+] Start Processing{Style.RESET_ALL} ==============================="
+                    )
+                    print()
                     extractor_obj.company_checker()
+                    end_time = time.time()
+                    execution_time = end_time - start_time
+
+                    print(
+                        f"\nExecution time:{Fore.LIGHTYELLOW_EX} {execution_time} seconds {Style.RESET_ALL}"
+                    )
+                    print(
+                        f"\n{Fore.LIGHTBLUE_EX}===================================================================="
+                    )
                 case "2":
+                    start_time = time.time()
                     merger_obj = Details_Merger(
                         self.details_sheet2, self.companies_sheet2
                     )
+                    print(
+                        f"\n=========================={Fore.LIGHTYELLOW_EX} [+] Start Processing{Style.RESET_ALL} ==============================="
+                    )
+                    print()
                     merger_obj.merger()
+                    end_time = time.time()
+                    execution_time = end_time - start_time
+
+                    print(
+                        f"\nExecution time:{Fore.LIGHTYELLOW_EX} {execution_time} seconds {Style.RESET_ALL}"
+                    )
+                    print(
+                        f"\n{Fore.LIGHTBLUE_EX}================================================================"
+                    )
+                case "3":
+                    start_time = time.time()
+                    eligible_obj = Eligibles_Merger(
+                        self.companies_path3, self.eligibles_path
+                    )
+                    print(
+                        f"\n=========================={Fore.LIGHTYELLOW_EX} [+] Start Processing{Style.RESET_ALL} ==============================="
+                    )
+                    print()
+                    eligible_obj.merger()
+                    end_time = time.time()
+                    execution_time = end_time - start_time
+
+                    print(
+                        f"\nExecution time:{Fore.LIGHTYELLOW_EX} {execution_time} seconds {Style.RESET_ALL}"
+                    )
+                    print(
+                        f"\n{Fore.LIGHTBLUE_EX}================================================================"
+                    )
                 case "0":
                     self.enteringDetails = False
-                    print(f"\n{Fore.RED}Exiting the Program..........{Style.RESET_ALL}")
+                    print(
+                        f"\n{Fore.BLACK+ Back.LIGHTRED_EX} EXTING THE PROGRAM {Style.RESET_ALL}"
+                    )
                 case _:
-                    print(f"\n{Fore.RED}Invalid Choice..........{Style.RESET_ALL}")
+                    print(
+                        f"\n{Fore.BLACK+ Back.LIGHTRED_EX} INVALID CHOICE {Style.RESET_ALL}"
+                    )
 
 
 details_path1 = "Extractor/details.xlsx"
@@ -213,8 +332,17 @@ companies_list = "Extractor/companies.txt"
 details_path2 = "Merger/details.xlsx"
 companies_path2 = "Merger/companies.xlsx"
 
+companies_path3 = "Eligible(Companies)/companies.xlsx"
+eligibles_path = "Eligible(Companies)/Eligibles.xlsx"
+
 if __name__ == "__main__":
     decorator_obj = Dectorator(
-        details_path1, companies_path1, details_path2, companies_path2, companies_list
+        details_path1,
+        companies_path1,
+        details_path2,
+        companies_path2,
+        companies_list,
+        eligibles_path,
+        companies_path3,
     )
     decorator_obj.decorating()
