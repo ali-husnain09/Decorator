@@ -1,20 +1,41 @@
 llc
 ltd
-co
-company
 co.
+company
+co
 company.
 inc.
 inc
-trust
-church  
-corporation
-property
-owner
-limit
-corp.
-corporation.
-corporation
-pvt ltd
 pvt
-pvt.
+private
+private ltd
+private co
+private co.
+l.l.c
+l.t.d
+p.a.i
+pvt. ltd
+pvt. co
+corporation
+corp.
+corp
+corp. ltd
+corp. co
+corp. co.
+church
+church ltd
+church co
+church co.
+trust
+trust ltd
+limited
+limited ltd
+limited co
+limited co.
+society
+society ltd
+society co
+limit
+owner
+property
+properties
