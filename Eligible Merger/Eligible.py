@@ -1,6 +1,7 @@
 import openpyxl
 import colorama
 from colorama import Fore, Back, Style
+import time
 
 colorama.init(autoreset=True)
 
@@ -52,8 +53,15 @@ class Eligibles_Merger:
             self.last_row_number += 1
 
 
-companies_path3 = "Eligible Merger/companies.xlsx"
-eligibles_path = "Eligible Merger/Eligibles.xlsx"
+companies_path3 = "companies.xlsx"
+eligibles_path = "Eligibles.xlsx"
 if __name__ == "__main__":
+    start_time = time.time()
     merger = Eligibles_Merger(companies_path3, eligibles_path)
     merger.merger()
+    end_time = time.time()
+    execution_time = end_time - start_time
+
+    print(
+        f"\nExecution Time:{Fore.LIGHTYELLOW_EX} {execution_time} Seconds {Style.RESET_ALL}"
+    )
